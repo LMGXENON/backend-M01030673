@@ -33,7 +33,7 @@ The data is stored in MongoDB Atlas, in a database called `LessonShop` with two 
 - `lessons` holds the 12 lessons
 - `orders` holds one document for every order placed
 
-The connection details are not in the code. They are in a file called `config.env`, which is in .gitignore so the username and password are never pushed to GitHub:
+The connection details are not in the code. They are in a file called `.env`, which is in .gitignore so the username and password are never pushed to GitHub:
 
 ```
 MONGODB_PREFIX="mongodb+srv://"
@@ -44,7 +44,7 @@ MONGODB_URL="@yourcluster.xxxxx.mongodb.net/"
 
 `node test.js` checks the connection on its own. `node seed.js` fills the lessons collection with the 12 lessons, and does nothing if the collection already has data.
 
-When the server is hosted on Render the same four values are added in the Render dashboard as environment variables, because config.env is not on GitHub.
+When the server is hosted on Render the same four values are added in the Render dashboard as environment variables, because .env is not on GitHub.
 
 ## Running the server
 
@@ -59,4 +59,4 @@ The server runs on http://localhost:3001/ and prints every request to the consol
 
 ## What I built it with
 
-Node.js with Express.js, the cors middleware, the MongoDB Node.js driver and dotenv for the config.env file. The data is stored in MongoDB Atlas.
+Node.js with Express.js, the cors middleware, the MongoDB Node.js driver and dotenv for the .env file. The data is stored in MongoDB Atlas.

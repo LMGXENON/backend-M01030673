@@ -1,8 +1,8 @@
 var express = require("express");
 var cors = require("cors");
 var path = require("path");
-// loads the MongoDB connection details from config.env into process.env
-require("dotenv").config({ path: "./config.env" });
+// loads the MongoDB connection details from .env into process.env
+require("dotenv").config({ path: "./.env" });
 const { MongoClient, ObjectId } = require("mongodb");
 
 var app = express();
@@ -17,7 +17,7 @@ app.use(function (request, response, next) {
 });
 
 // MongoDB connection setup: the four parts of the connection string come from
-// config.env, so the username and password are never in the code or on GitHub
+// .env, so the username and password are never in the code or on GitHub
 const uri = process.env.MONGODB_PREFIX
     + process.env.MONGODB_USERNAME + ":"
     + process.env.MONGODB_PASSWORD
@@ -30,7 +30,7 @@ client.connect()
         console.log("You successfully connected to MongoDB!");
     })
     .catch(function (err) {
-        console.log("Could not connect to MongoDB. Check the MONGODB_ values in config.env,"
+        console.log("Could not connect to MongoDB. Check the MONGODB_ values in .env,"
             + " and check your IP address is in the Atlas IP Access List.");
         console.dir(err);
     });
