@@ -1,6 +1,10 @@
 var express = require("express");
 var cors = require("cors");
 var path = require("path");
+// loads the MongoDB connection details from config.env into process.env
+require("dotenv").config({ path: "./config.env" });
+const { MongoClient, ObjectId } = require("mongodb");
+
 var app = express();
 
 app.use(cors());
@@ -12,20 +16,24 @@ app.use(function (request, response, next) {
     next();
 });
 
-var lessons = [
-    { id: 1, subject: "Maths", location: "Hendon", price: 100, spaces: 12, image: "images/maths.png", imageAlt: "Maths lesson" },
-    { id: 2, subject: "English", location: "Westminster", price: 80, spaces: 8, image: "images/english.png", imageAlt: "English lesson" },
-    { id: 3, subject: "Science", location: "Wembley", price: 90, spaces: 5, image: "images/science.png", imageAlt: "Science lesson" },
-    { id: 4, subject: "Art", location: "Stratford", price: 95, spaces: 10, image: "images/art.png", imageAlt: "Art lesson" },
-    { id: 5, subject: "Music", location: "Knightsbridge", price: 120, spaces: 3, image: "images/music.png", imageAlt: "Music lesson" },
-    { id: 6, subject: "Drama", location: "Camden", price: 85, spaces: 7, image: "images/drama.png", imageAlt: "Drama lesson" },
-    { id: 7, subject: "French", location: "Shoreditch", price: 110, spaces: 4, image: "images/french.png", imageAlt: "French lesson" },
-    { id: 8, subject: "Computing", location: "Islington", price: 105, spaces: 9, image: "images/computing.png", imageAlt: "Computing lesson" },
-    { id: 9, subject: "History", location: "Greenwich", price: 75, spaces: 15, image: "images/history.png", imageAlt: "History lesson" },
-    { id: 10, subject: "Geography", location: "Clapham", price: 90, spaces: 6, image: "images/geography.png", imageAlt: "Geography lesson" },
-    { id: 11, subject: "Sports", location: "Brixton", price: 70, spaces: 11, image: "images/sports.png", imageAlt: "Sports lesson" },
-    { id: 12, subject: "Cooking", location: "Hackney", price: 115, spaces: 2, image: "images/cooking.png", imageAlt: "Cooking lesson" }
-];
+// MongoDB connection setup: the four parts of the connection string come from
+// config.env, so the username and password are never in the code or on GitHub
+const uri = process.env.MONGODB_PREFIX
+    + process.env.MONGODB_USERNAME + ":"
+    + process.env.MONGODB_PASSWORD
+    + process.env.MONGODB_URL;
+const client = new MongoClient(uri);
+const db = client.db("LessonShop");
+
+client.connect()
+    .then(function () {
+        console.log("You successfully connected to MongoDB!");
+    })
+    .catch(function (err) {
+        console.log("Could not connect to MongoDB. Check the MONGODB_ values in config.env,"
+            + " and check your IP address is in the Atlas IP Access List.");
+        console.dir(err);
+    });
 
 // static file middleware: serves the lesson images from the staticFiles folder
 var publicPath = path.resolve(__dirname, "staticFiles");
@@ -36,13 +44,15 @@ app.use("/images", function (request, response) {
     response.status(404).send("Image not found!");
 });
 
-// GET route that returns all the lessons as JSON
-app.get("/lessons", function (request, response) {
-    response.json(lessons);
+// GET route that returns all the lessons from the database as JSON
+app.get("/lessons", async function (request, response) {
+    let collection = await db.collection("lessons");
+    let results = await collection.find({}).toArray();
+    response.send(results);
 });
 
-// POST route that takes a new order and writes a summary to the console
-app.post("/orders", function (request, response) {
+// POST route that saves a new order into the Orders collection
+app.post("/orders", async function (request, response) {
     var body = request.body;
     var orderLessons = body.lessons || [];
     console.log("Order received"
@@ -51,7 +61,24 @@ app.post("/orders", function (request, response) {
         + "\nLessons: " + orderLessons.map(function (entry) {
             return entry.id + " x" + entry.quantity;
         }).join(", "));
-    response.json({ message: "Order received!" });
+    let collection = await db.collection("orders");
+    let result = await collection.insertOne(body);
+    response.send(result);
+});
+
+// PUT route that updates any attribute of one lesson in the database.
+// The front-end uses it after an order to store the new number of spaces.
+app.put("/lessons/:_id", async function (request, response) {
+    let collection = await db.collection("lessons");
+    let tempid = request.params._id;
+
+    const query = { _id: new ObjectId(tempid) };
+    const updates = {
+        $set: request.body
+    };
+    let result = await collection.updateOne(query, updates);
+    console.log(result);
+    response.send(result);
 });
 
 // final middleware: returns a 404 error for any unrecognised request

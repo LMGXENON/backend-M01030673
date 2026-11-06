@@ -4,7 +4,7 @@ CST3144 coursework. Student ID: M01030673.
 
 This is the server for Lesson Shop, my online shop for lessons. I built it with Node.js and Express.js.
 
-It sends the lessons to the frontend as JSON and lets the frontend request the data from a different origin (CORS).
+It gets the lessons from a MongoDB Atlas database and sends them to the frontend as JSON, serves the lesson pictures, saves every new order to the database and prints a summary of it to the console. It lets the frontend request the data from a different origin (CORS).
 
 ## Links
 
@@ -17,14 +17,41 @@ These are the four links the coursework brief asks for.
 
 ## API
 
-| Method | Route | What it returns |
+| Method | Route | What it does |
 |---|---|---|
-| GET | / | All 12 lessons as JSON. Each lesson has an id, subject, location, price, spaces, an image path and image alt text |
+| GET | /lessons | Returns all the lessons from the lessons collection in MongoDB as JSON. Each lesson has an id, subject, location, price, spaces, an image path and image alt text |
+| POST | /orders | Saves the order from the frontend into the orders collection in MongoDB, prints a summary to the console and returns the result of the insert |
+| PUT | /lessons/:_id | Updates any attribute of one lesson in the lessons collection, for example { "spaces": 7 }. The frontend uses it after an order to store the new number of spaces left |
+| GET | /images/filename.png | Returns that picture from the staticFiles folder, or an error message if the picture does not exist |
+
+Any other request gets a 404 with the message Page not found. A logger middleware also prints the method and url of every request to the console.
+
+## Database
+
+The data is stored in MongoDB Atlas, in a database called `LessonShop` with two collections:
+
+- `lessons` holds the 12 lessons
+- `orders` holds one document for every order placed
+
+The connection details are not in the code. They are in a file called `config.env`, which is in .gitignore so the username and password are never pushed to GitHub:
+
+```
+MONGODB_PREFIX="mongodb+srv://"
+MONGODB_USERNAME="your_db_username"
+MONGODB_PASSWORD="your_db_password"
+MONGODB_URL="@yourcluster.xxxxx.mongodb.net/"
+```
+
+`node test.js` checks the connection on its own. `node seed.js` fills the lessons collection with the 12 lessons, and does nothing if the collection already has data.
+
+When the server is hosted on Render the same four values are added in the Render dashboard as environment variables, because config.env is not on GitHub.
 
 ## Running the server
 
 ```
 npm install
+node test.js
+node seed.js
 node server.js
 ```
 
@@ -32,4 +59,4 @@ The server runs on http://localhost:3001/ and prints every request to the consol
 
 ## What I built it with
 
-Node.js with Express.js and the cors middleware.
+Node.js with Express.js, the cors middleware, the MongoDB Node.js driver and dotenv for the config.env file. The data is stored in MongoDB Atlas.
