@@ -33,20 +33,17 @@ The data is stored in MongoDB Atlas, in a database called `LessonShop` with two 
 - `lessons` holds the 12 lessons
 - `orders` holds one document for every order placed
 
-The connection details are not in the code. They are in a file called `.env`, which is in .gitignore so the username and password are never pushed to GitHub:
+The connection string is not in the code. It is in a file called `.env`, which is in .gitignore so the username and password are never pushed to GitHub. There is one variable, and it holds the whole connection string:
 
 ```
-MONGODB_PREFIX="mongodb+srv://"
-MONGODB_USERNAME="your_db_username"
-MONGODB_PASSWORD="your_db_password"
-MONGODB_URL="@yourcluster.xxxxx.mongodb.net/"
+MONGODB_URI="mongodb+srv://your_db_username:your_db_password@cluster0.xxxxx.mongodb.net/"
 ```
 
 The connection to the database is checked when the server starts: it prints `You successfully connected to MongoDB!` if the database is reachable, and the error if it is not. The lesson data is inserted in the Atlas interface, by opening the lessons collection and using Insert Document.
 
-When the server is hosted on Render the same four values are added in the Render dashboard as environment variables, because .env is not on GitHub.
+If the variable is missing the server stops at startup and says so, instead of failing later with a connection error.
 
-If you would rather not keep the parts separate, set a single `MONGODB_URI` variable with the whole connection string instead, for example `mongodb+srv://user:pass@cluster.xxxxx.mongodb.net/`. When `MONGODB_URI` is set it is used on its own and the four parts are ignored.
+When the server is hosted on Render the same `MONGODB_URI` value is added in the Render dashboard as an environment variable, because .env is not on GitHub.
 
 ## Running the server
 

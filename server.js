@@ -16,15 +16,15 @@ app.use(function (request, response, next) {
     next();
 });
 
-// MongoDB connection setup: the connection details come from .env, so the
-// username and password are never in the code or on GitHub.
-// Either set MONGODB_URI to the whole connection string, or set the four parts
-// (MONGODB_PREFIX, MONGODB_USERNAME, MONGODB_PASSWORD, MONGODB_URL) and they are joined here.
-const uri = process.env.MONGODB_URI
-    || (process.env.MONGODB_PREFIX
-        + process.env.MONGODB_USERNAME + ":"
-        + process.env.MONGODB_PASSWORD
-        + process.env.MONGODB_URL);
+// MongoDB connection setup: the whole connection string is in MONGODB_URI in .env,
+// so the username and password are never in the code or on GitHub.
+const uri = (process.env.MONGODB_URI || "").trim();
+
+if (!uri) {
+    console.log("MONGODB_URI is not set. Put your Atlas connection string in .env,"
+        + " for example mongodb+srv://user:password@cluster0.xxxxx.mongodb.net/");
+    process.exit(1);
+}
 const client = new MongoClient(uri);
 const db = client.db("LessonShop");
 
