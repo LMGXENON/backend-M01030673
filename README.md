@@ -42,7 +42,7 @@ MONGODB_PASSWORD="your_db_password"
 MONGODB_URL="@yourcluster.xxxxx.mongodb.net/"
 ```
 
-`node test.js` checks the connection on its own. `node seed.js` fills the lessons collection with the 12 lessons, and does nothing if the collection already has data.
+The connection to the database is checked when the server starts: it prints `You successfully connected to MongoDB!` if the database is reachable, and the error if it is not. The lesson data is inserted in the Atlas interface, by opening the lessons collection and using Insert Document.
 
 When the server is hosted on Render the same four values are added in the Render dashboard as environment variables, because .env is not on GitHub.
 
@@ -52,8 +52,6 @@ If you would rather not keep the parts separate, set a single `MONGODB_URI` vari
 
 ```
 npm install
-node test.js
-node seed.js
 node server.js
 ```
 
