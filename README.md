@@ -46,6 +46,8 @@ MONGODB_URL="@yourcluster.xxxxx.mongodb.net/"
 
 When the server is hosted on Render the same four values are added in the Render dashboard as environment variables, because .env is not on GitHub.
 
+If you would rather not keep the parts separate, set a single `MONGODB_URI` variable with the whole connection string instead, for example `mongodb+srv://user:pass@cluster.xxxxx.mongodb.net/`. When `MONGODB_URI` is set it is used on its own and the four parts are ignored.
+
 ## Running the server
 
 ```
