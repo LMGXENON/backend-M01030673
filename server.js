@@ -61,6 +61,24 @@ app.get("/altlessons", async function (request, response) {
     response.send(results);
 });
 
+// challenge task: GET route that searches the lessons in every field at once
+app.get("/search/:query", async function (request, response) {
+    let searchText = request.params.query.toLowerCase();
+    let collection = await db.collection("lessons");
+    let lessons = await collection.find({}).toArray();
+
+    // price and spaces are numbers, so they are turned into text before comparing
+    let results = lessons.filter(function (lesson) {
+        return String(lesson.subject).toLowerCase().includes(searchText)
+            || String(lesson.location).toLowerCase().includes(searchText)
+            || String(lesson.price).includes(searchText)
+            || String(lesson.spaces).includes(searchText);
+    });
+
+    console.log("Search for " + searchText + " found " + results.length + " lessons");
+    response.send(results);
+});
+
 // POST route that saves a new order into the Orders collection
 app.post("/orders", async function (request, response) {
     var body = request.body;
