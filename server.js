@@ -80,22 +80,16 @@ app.post("/orders", async function (request, response) {
 app.post("/altorders", async function (request, response) {
     var body = request.body;
     let collection = await db.collection("orders");
-
-    // same phone number means the order is already in the database
     let existingOrder = await collection.findOne({ phone: body.phone });
 
     if (existingOrder) {
-        console.log("Order refused, the phone number is already in the database: " + body.phone);
-        response.status(409).send({
-            message: "An order with this phone number already exists",
-            orderId: existingOrder._id
-        });
-        return;
+        console.log("Order not saved, this phone number is already used: " + body.phone);
+        response.status(409).send("This phone number already has an order");
+    } else {
+        let result = await collection.insertOne(body);
+        console.log("Order saved for: " + body.phone);
+        response.send(result);
     }
-
-    let result = await collection.insertOne(body);
-    console.log("Order saved with a new phone number: " + body.phone);
-    response.send(result);
 });
 
 // PUT route that updates any attribute of one lesson in the database.
