@@ -112,6 +112,10 @@ app.use(function (request, response, next) {
     response.status(404).send("Page not found!");
 });
 
-app.listen(3001, function () {
-    console.log("App started on port 3001");
+// Render decides the port when the server is hosted, so the port number comes from
+// the PORT environment variable if there is one, and 3001 is used when running locally
+const port = process.env.PORT || 3001;
+
+app.listen(port, function () {
+    console.log("App started on port " + port);
 });
