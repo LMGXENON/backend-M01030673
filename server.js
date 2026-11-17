@@ -107,6 +107,30 @@ app.put("/lessons/:_id", async function (request, response) {
     response.send(result);
 });
 
+// challenge task: GET route that returns how many spaces of one lesson have been sold so far
+app.get("/enrolment/:lessonid", async function (request, response) {
+    let lessonId = Number(request.params.lessonid);
+
+    if (isNaN(lessonId)) {
+        response.status(400).send("The lesson id must be a number");
+    } else {
+        let collection = await db.collection("orders");
+        let orders = await collection.find({ "lessons.id": lessonId }).toArray();
+
+        // add up the quantity of this lesson in every order that has it
+        let enrolment = 0;
+        for (const order of orders) {
+            for (const entry of order.lessons) {
+                if (entry.id === lessonId) {
+                    enrolment += entry.quantity;
+                }
+            }
+        }
+
+        response.send({ lessonId: lessonId, enrolment: enrolment });
+    }
+});
+
 // final middleware: returns a 404 error for any unrecognised request
 app.use(function (request, response, next) {
     response.status(404).send("Page not found!");

@@ -24,6 +24,7 @@ These are the four links the coursework brief asks for.
 | PUT | /lessons/:_id | Updates any attribute of one lesson in the lessons collection, for example { "spaces": 7 }. The frontend uses it after an order to store the new number of spaces left |
 | GET | /altlessons | Bonus task 8.4. Same as /lessons but only returns the lessons that still have spaces left, so the lessons with 0 spaces are left out |
 | POST | /altorders | Bonus task 8.5. Saves the order like /orders, but if the phone number is already in the orders collection it refuses the order with a 409 and a message instead of saving it twice |
+| GET | /enrolment/:lessonid | Returns how many spaces of that lesson have already been sold, as { "lessonId": 1, "enrolment": 3 }. It reads every order that contains the lesson and adds up the quantities |
 | GET | /images/filename.png | Returns that picture from the staticFiles folder, or an error message if the picture does not exist |
 
 Any other request gets a 404 with the message Page not found. A logger middleware also prints the method and url of every request to the console.
