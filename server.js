@@ -67,12 +67,10 @@ app.get("/search/:query", async function (request, response) {
     let collection = await db.collection("lessons");
     let lessons = await collection.find({}).toArray();
 
-    // price is a number, so it is turned into text before comparing
-    // only the start of each field counts, so typing "a" finds Art but not Drama in Camden
+    // the search box says search lessons, so only the lesson subject is compared
+    // the start of the subject has to match, so typing "a" finds Art but not Drama
     let results = lessons.filter(function (lesson) {
-        return String(lesson.subject).toLowerCase().startsWith(searchText)
-            || String(lesson.location).toLowerCase().startsWith(searchText)
-            || String(lesson.price).startsWith(searchText);
+        return String(lesson.subject).toLowerCase().startsWith(searchText);
     });
 
     console.log("Search for " + searchText + " found " + results.length + " lessons");
