@@ -54,17 +54,6 @@ If the variable is missing the server stops at startup and says so, instead of f
 
 When the server is hosted on Render the same `MONGODB_URI` value is added in the Render dashboard as an environment variable, because .env is not on GitHub.
 
-## Running the server
-
-```
-npm install
-node server.js
-```
-
-The server runs on http://localhost:3001/ and prints every request to the console. The frontend fetches the lessons from here so start this first.
-
-The port is not hard-coded. The server uses the `PORT` environment variable if there is one, and 3001 if there is not. Render sets `PORT` itself, so the same code runs on my computer and on Render without any changes.
-
 ## What I built it with
 
 Node.js with Express.js, the cors middleware, the MongoDB Node.js driver and dotenv for the .env file. The data is stored in MongoDB Atlas.
