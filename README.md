@@ -21,6 +21,8 @@ These are the four links the coursework brief asks for.
 |---|---|---|
 | GET | /lessons | Returns all the lessons from the lessons collection in MongoDB as JSON. Each lesson has an id, subject, location, price, spaces, an image path and image alt text |
 | POST | /orders | Saves the order from the frontend into the orders collection in MongoDB, prints a summary to the console and returns the result of the insert |
+| GET | /orders | Returns every order from the orders collection as JSON. The frontend does not use it: it is there for testing the server, and for exporting the orders collection |
+| DELETE | /orders/:id | Removes one order, using the object id in the url, and returns the result of the delete |
 | PUT | /lessons/:_id | Updates any attribute of one lesson in the lessons collection, for example { "spaces": 7 }. The frontend uses it after an order to store the new number of spaces left |
 | GET | /search/:query | Challenge task. Returns the lessons whose subject starts with the query, as JSON, for example /search/cook or /search/art. It is not case sensitive |
 | GET | /altlessons | Bonus task 8.4. Same as /lessons but only returns the lessons that still have spaces left, so the lessons with 0 spaces are left out |

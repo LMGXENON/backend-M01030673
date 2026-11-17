@@ -106,6 +106,13 @@ app.get("/teachers/:teacherid/lessons", async function (request, response) {
     }
 });
 
+// Week 9 lab: GET route that returns every order from the database as JSON
+app.get("/orders", async function (request, response) {
+    let collection = await db.collection("orders");
+    let results = await collection.find({}).toArray();
+    response.send(results);
+});
+
 // POST route that saves a new order into the Orders collection
 app.post("/orders", async function (request, response) {
     var body = request.body;
@@ -135,6 +142,15 @@ app.post("/altorders", async function (request, response) {
         console.log("Order saved for: " + body.phone);
         response.send(result);
     }
+});
+
+// Week 9 lab: DELETE route that removes one order, using its object id in the url
+app.delete("/orders/:id", async function (request, response) {
+    let collection = await db.collection("orders");
+    const query = { _id: new ObjectId(request.params.id) };
+    let result = await collection.deleteOne(query);
+    console.log(result);
+    response.send(result).status(200);
 });
 
 // PUT route that updates any attribute of one lesson in the database.
