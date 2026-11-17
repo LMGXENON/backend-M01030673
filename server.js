@@ -79,6 +79,35 @@ app.get("/search/:query", async function (request, response) {
     response.send(results);
 });
 
+// challenge task: GET route that returns all the teachers from the database as JSON
+app.get("/teachers", async function (request, response) {
+    let collection = await db.collection("teachers");
+    let results = await collection.find({}).toArray();
+    response.send(results);
+});
+
+// challenge task: GET route that returns the lessons one teacher teaches
+app.get("/teachers/:teacherid/lessons", async function (request, response) {
+    let teacherId = Number(request.params.teacherid);
+
+    if (isNaN(teacherId)) {
+        response.status(400).send("The teacher id must be a number");
+    } else {
+        let teacherCollection = await db.collection("teachers");
+        let teacher = await teacherCollection.findOne({ id: teacherId });
+
+        if (!teacher) {
+            response.status(404).send("Teacher not found");
+        } else {
+            // the teacher document only stores the lesson id numbers, so the
+            // lesson details are read from the lessons collection with $in
+            let lessonCollection = await db.collection("lessons");
+            let lessons = await lessonCollection.find({ id: { $in: teacher.lessons } }).sort({ id: 1 }).toArray();
+            response.send({ teacherId: teacherId, lessons: lessons });
+        }
+    }
+});
+
 // POST route that saves a new order into the Orders collection
 app.post("/orders", async function (request, response) {
     var body = request.body;
