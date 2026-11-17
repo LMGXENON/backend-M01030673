@@ -54,6 +54,13 @@ app.get("/lessons", async function (request, response) {
     response.send(results);
 });
 
+// bonus task 8.4: GET route that only returns the lessons that still have spaces left
+app.get("/altlessons", async function (request, response) {
+    let collection = await db.collection("lessons");
+    let results = await collection.find({ spaces: { $gt: 0 } }).toArray();
+    response.send(results);
+});
+
 // POST route that saves a new order into the Orders collection
 app.post("/orders", async function (request, response) {
     var body = request.body;
@@ -66,6 +73,28 @@ app.post("/orders", async function (request, response) {
         }).join(", "));
     let collection = await db.collection("orders");
     let result = await collection.insertOne(body);
+    response.send(result);
+});
+
+// bonus task 8.5: POST route that only saves the order if the phone number is new
+app.post("/altorders", async function (request, response) {
+    var body = request.body;
+    let collection = await db.collection("orders");
+
+    // same phone number means the order is already in the database
+    let existingOrder = await collection.findOne({ phone: body.phone });
+
+    if (existingOrder) {
+        console.log("Order refused, the phone number is already in the database: " + body.phone);
+        response.status(409).send({
+            message: "An order with this phone number already exists",
+            orderId: existingOrder._id
+        });
+        return;
+    }
+
+    let result = await collection.insertOne(body);
+    console.log("Order saved with a new phone number: " + body.phone);
     response.send(result);
 });
 
